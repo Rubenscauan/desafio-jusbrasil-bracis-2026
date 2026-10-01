@@ -167,9 +167,9 @@ class Candidate:
 # Classes processuais e conectores podem compor-se livremente: por exemplo,
 # "EDcl nos EDcl no AgInt no Agravo em Recurso Especial".  O número continua
 # sendo obrigatório, o que mantém a expressão longe de prosa comum.
-PROCESS_PREFIX = r"(?:TERCEIRO\s+)?(?:TST[-\s]+)?(?:(?:EMBARGOS(?:\s+DE\s+DECLARA.{0,4}O)?|EDCL|EDS?|AGINT|AG\.?\s*INT\.?|AGR[G.]?|AG\.?\s*REG(?:IMENTAL)?|AGRAVO(?:\s+INTERNO|\s+EM\s+RECURSO\s+ESPECIAL|\s+DE\s+INSTRUMENTO)?|RECURSO(?:\s+EM\s+HABEAS\s+CORPUS|\s+ESPECIAL(?:\s+ELEITORAL)?)?|REC\.?\s*ESP(?:E)?\.?|R\.?\s*ESP(?:E)?\.?|RESP(?:E|EI)?|ARESP(?:EI)?|RHC|H\.?C\.?|RECL\.?|RCL|RECLAMA.{0,4}O|RSE|APL|RMS|ARR|RR|(?-i:AR)(?=\s*(?:N[º°O�.]?\s*)?\d)|(?-i:AI)(?=\s*(?:N[º°O�.]?\s*)?\d)|MS|TEM.{0,2}|R-RP|AGARR)(?:\s+(?:NO|NOS|NA|NAS|EM|DE|DO|DA))?\s*)+"
+PROCESS_PREFIX = r"(?:TERCEIRO\s+)?(?:TST[-\s]+)?(?:(?:PROCESSO|EMBARGOS(?:\s+DE\s+DECLARA.{0,4}O)?|EDCL|EDS?|AGINT|AG\.?\s*INT\.?|AGR[G.]?|AG\.?\s*REG(?:IMENTAL)?|AGRAVO(?:\s+INTERNO|\s+EM\s+RECURSO\s+ESPECIAL|\s+DE\s+INSTRUMENTO)?|RECURSO(?:\s+EM\s+HABEAS\s+CORPUS|\s+ESPECIAL(?:\s+ELEITORAL)?)?|REC\.?\s*ESP(?:E)?\.?|R\.?\s*ESP(?:E)?\.?|RESP(?:E|EI)?|ARESP(?:EI)?|RHC|H\.?C\.?|RECL\.?|RCL|RECLAMA.{0,4}O|RSE|APL|RMS|ARR|RR|(?-i:AR)(?=\s*(?:N[º°O�.]?\s*)?\d)|(?-i:AI)(?=\s*(?:N[º°O�.]?\s*)?\d)|MS|TEM.{0,2}|R-RP|AGARR)(?:[\s\-–—]+(?:NO|NOS|NA|NAS|EM|DE|DO|DA)[\s\-–—]*)?\s*)+"
 PROCESS_RE = re.compile(
-    rf"(?P<prefix>{PROCESS_PREFIX})(?:N[º°O�.]?|NO)?\s*(?:[-–]\s*)?(?P<number>[0-9OoIlSsGg][0-9OoIlSsGg.\-–/()\s]{{2,}}\d)(?:\s*(?:/|\-|–|\()\s*(?P<court>[A-Z]{{2}})\)?)?",
+    rf"(?P<prefix>{PROCESS_PREFIX})(?:N\s*(?:\.º|[º°O�.]?)|NO)?\s*(?:[-–]\s*)?(?P<number>[0-9OoIlSsGg][0-9OoIlSsGg.\-–/()\s]{{2,}}\d)(?:\s*(?:/|\-|–|\()\s*(?P<court>[A-Z]{{2}})\)?(?![A-Za-z]))?",
     re.IGNORECASE,
 )
 MAIN_CASE_MARKER = re.compile(r"\bESTES\s+AUTOS\s+DE\b", re.IGNORECASE)
@@ -187,7 +187,7 @@ LAW_RE = re.compile(
 # número do artigo consultado contra os registros de natureza ``dispositivo``.
 FLEX_LAW_RE = re.compile(
     r"\bART(?:IGO)?\.?\s*(?P<article>\d+(?:\.\d+)?)(?:[º°])?[\s\S]{0,35}?\b(?:DO|DA)\s+(?P<law>"
-    r"CONSOLIDA.{0,5}O\s+DAS\s+LEIS\s+DO\s+TRABALHO|CONSTITUI.{0,5}(?:\s+(?:FEDERAL|DA\s+REPUBLICA))?|"
+    r"CONSOLIDA.{0,5}O\s+DAS\s+LEIS\s+DO\s+TRABALHO|(?:CONSTITUI.{0,5}?\s+DA\s+REP[ÚU]BLICA|CONSTITUI.{0,5}?\s+FEDERAL|CONSTITUI.{0,5})\b|"
     r"C.DIGO\s+(?:DE\s+DEFESA\s+DO\s+CONSUMIDOR|PENAL\s+MILITAR|DE\s+PROCESSO\s+(?:CIVIL|PENAL)|ELEITORAL|CIVIL)|"
     r"CPC|CPP|CLT|CPM|CDC|CC|LEI(?:\s+COMPLEMENTAR)?\s*(?:N.{0,2}\s*)?\d[\d.\s/\-]*"
     r")",
@@ -197,6 +197,7 @@ FLEX_LAW_RE = re.compile(
 VAGUE = (
     # Mantém apenas referências com classe, tribunal, data e relatoria explícitos.
     ("jurisprudencia", re.compile(r"\b(?:julgado|ac[óo�]rd[ãa�]o|precedente|Reclama[cç][ãa�]o|Recurso\s+em\s+Habeas\s+Corpus|Agravo\s+em\s+Recurso\s+Especial)\s+(?:do|da)\s+(?:STF|STJ|TST|TSE|STM),?\s*(?:prof(?:er|cr)ido\s+)?(?:em|de)\s+\d{4}[\s\S]{0,100}?(?:relatoria|Rel\.?)\s*(?:Min\.?)?[^,.\n]{2,80}", re.I)),
+    ("jurisprudencia", re.compile(r"\b(?:decis[aã]o\s+colegiada|entendimento|manifesta[cç][aã]o|decis[aã]o|ac[óo]rd[aã]o)\s+(?:do|da)\s+(?:STF|STJ|TST|TSE|STM),?\s*(?:julgad[oa]|publicad[oa]|proferid[oa])\s+(?:em|no\s+ano\s+de)\s+\d{4}[\s\S]{0,100}?(?:sob\s+)?(?:relatoria|rel\.?)\s*(?:da?\s*)?(?:min\.?\s*)?[^,.\n]{2,80}", re.I)),
 )
 
 # Citações por classe + ano + relator sem número de processo. O span é mantido
@@ -241,6 +242,14 @@ def _number(match: re.Match[str]) -> str:
         elif character.isalpha():
             result.append("?")
     return "".join(result)
+
+
+def _is_primary_header_label(text: str, start: int, prefix: str) -> bool:
+    """Do not emit the document's own process number as a cited reference."""
+    if not prefix.lstrip().upper().startswith("PROCESSO") or start > 500:
+        return False
+    line_start = text.rfind("\n", 0, start) + 1
+    return not text[line_start:start].strip()
 
 
 def _distance_at_most_one(left: str, right: str) -> bool:
@@ -308,6 +317,8 @@ def detect(text: str, index: HeaderIndex) -> list[Candidate]:
     for match in THEME_RE.finditer(text):
         candidates.append(Candidate(match.start(), match.end(), "jurisprudencia", "inventada"))
     for match in PROCESS_RE.finditer(text):
+        if _is_primary_header_label(text, match.start(), match.group("prefix")):
+            continue
         number = _number(match)
         # O sufixo do processo é uma UF, não o tribunal superior do acórdão.
         canonical_id = index.process(number)
@@ -341,6 +352,8 @@ def detect(text: str, index: HeaderIndex) -> list[Candidate]:
         # data de assinatura em processo: o marcador e a âncora devem estar
         # dentro da mesma oração.
         if first_marker is None:
+            continue
+        if _is_primary_header_label(text, sentence_start + first_marker.start(), first_marker.group()):
             continue
         span_start = sentence_start + first_marker.start()
         # Inclui UF/parêntese, mas não engole a oração seguinte.

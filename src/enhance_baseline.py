@@ -144,7 +144,8 @@ def main() -> None:
                     (
                         candidate.label == "real"
                         and (
-                            candidate.end - candidate.start > current["fim"] - current["inicio"]
+                            current["classificacao"] != "real"
+                            or candidate.end - candidate.start > current["fim"] - current["inicio"]
                             or not current_starts_with_process
                         )
                     )
@@ -176,6 +177,12 @@ def main() -> None:
                 paragraph = re.search(r"\r?\n[ \t]*\r?\n", span)
                 if paragraph:
                     item["fim"] = item["inicio"] + paragraph.start()
+                    item["trecho"] = text[item["inicio"] : item["fim"]]
+                    span = item["trecho"]
+                # O ponto que fecha a frase não integra a identificação da APL;
+                # preserva pontos de abreviações caso o nome do relator falte.
+                if span.endswith(".") and not re.search(r"\b(?:REL|MIN|DES|DR)\.$", span, re.I):
+                    item["fim"] -= 1
                     item["trecho"] = text[item["inicio"] : item["fim"]]
                     span = item["trecho"]
 
