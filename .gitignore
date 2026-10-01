@@ -1,0 +1,33 @@
+# Dados do desafio e artefatos de desenvolvimento (mantidos apenas localmente)
+*.db
+*.sqlite
+*.sqlite3
+*.xlsx
+*.csv
+*.pdf
+txt/
+models/
+artifacts/
+out*/
+submission*.csv
+.deepeval/
+model-manifest.json
+
+# Código experimental não utilizado pela execução final
+/src/*
+!/src/main.py
+!/src/number_position.py
+!/src/semantic_detector.py
+!/src/pipeline_v2.py
+!/src/enhance_baseline.py
+!/src/evaluate_official_zip.py
+
+# Ambiente e arquivos temporários
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+.DS_Store
+Thumbs.db
